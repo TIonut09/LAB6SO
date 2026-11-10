@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     HANDLE hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(SharedData), "LabSharedMem");
     if (hMapFile == NULL) return 1;
 
-    SharedData *shared = (SharedData*) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedData));
+    SharedData *shared = (SharedData*) mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (shared == NULL) return 1;
 
     HANDLE hSemaphore = CreateSemaphore(NULL, 1, 1, "LabSemaphore");
