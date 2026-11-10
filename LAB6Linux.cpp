@@ -31,7 +31,7 @@ void process_logic(SharedData *shared, const char *process_name) {
 }
 
 int main() {
-    SharedData *shared = mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    SharedData *shared = (SharedData*) mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if (shared == MAP_FAILED) exit(1);
     shared->counter = 0;
     if (sem_init(&shared->sem, 1, 1) != 0) exit(1);
