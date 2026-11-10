@@ -22,7 +22,7 @@ void process_logic(SharedData *shared, HANDLE sem, const char *process_name) {
             coin = (rand() % 2) + 1;
         }
         ReleaseSemaphore(sem, 1, NULL);
-        Sleep(1);
+        Sleep(1); // pauza foarte scurta
     }
 }
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     HANDLE hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(SharedData), "LabSharedMem");
     if (hMapFile == NULL) return 1;
 
-    SharedData *shared = (SharedData*) mmap(NULL, sizeof(SharedData), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    SharedData *shared = (SharedData*) MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedData));
     if (shared == NULL) return 1;
 
     HANDLE hSemaphore = CreateSemaphore(NULL, 1, 1, "LabSemaphore");
@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
         ZeroMemory(&pi, sizeof(pi));
 
         char cmd[MAX_PATH];
-        sprintf(cmd, "\"%s\" child", argv[0]);
+        // Folosim sprintf_s in loc de sprintf pentru ca Visual Studio cere functii sigure
+        sprintf_s(cmd, sizeof(cmd), "\"%s\" child", argv[0]);
 
         if (!CreateProcess(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) return 1;
 
